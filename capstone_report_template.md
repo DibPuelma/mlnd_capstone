@@ -58,6 +58,7 @@ _(approx. 3-5 pages)_
 
 ### Data Preprocessing
 data_cleaner.py
+Explain preprocessing made in ipynb
 
 In this section, all of your preprocessing steps will need to be clearly documented, if any were necessary. From the previous section, any of the abnormalities or characteristics that you identified about the dataset will be addressed and corrected here. Questions to ask yourself when writing this section:
 - _If the algorithms chosen require preprocessing steps like feature selection or feature transformations, have they been properly documented?_
@@ -66,7 +67,8 @@ In this section, all of your preprocessing steps will need to be clearly documen
 
 ### Implementation
 
-3 features used
+3 features of the data used
+GMM, DBSCAN
 Inertia -> Calinski-Harabasz
 
 In this section, the process for which metrics, algorithms, and techniques that you implemented for the given data will need to be clearly documented. It should be abundantly clear how the implementation was carried out, and discussion should be made regarding any complications that occurred during this process. Questions to ask yourself when writing this section:
@@ -88,25 +90,34 @@ For the DBSCAN I made a manual grid search considering 8 different values for th
 _(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
-The following values were achieved by each model
+The following values were achieved by each proposed model
 
-TODO: INSERT TABLE
+TODO: INSERT TABLE WITH SILHOUETTE AND CH VALUES for DBSCAN and GMM
 
-As seen above, in terms of the qualitative analysis, the best model is the k-means, the benchmark model. This is disappointing, but encouraging at the same time. It means that with a simple clustering model it is possible to get interesting information from the companies customers.
+As seen in the table, the Gaussian Mixture Model had a much better performance than the DBSCAN. I thought that it was going to be the other way around, but even looking at the clustering graphs is it obvious that the DBSCAN algorithm does not work for this dataset.
 
-When a more qualitative analysis is made  
-In this section, the final model and any supporting qualities should be evaluated in detail. It should be clear how the final model was derived and why this model was chosen. In addition, some type of analysis should be used to validate the robustness of this model and its solution, such as manipulating the input data or environment to see how the model’s solution is affected (this is called sensitivity analysis). Questions to ask yourself when writing this section:
-- _Is the final model reasonable and aligning with solution expectations? Are the final parameters of the model appropriate?_
-- _Has the final model been tested with various inputs to evaluate whether the model generalizes well to unseen data?_
-- _Is the model robust enough for the problem? Do small perturbations (changes) in training data or the input space greatly affect the results?_
-- _Can results found from the model be trusted?_
+The scores for the Gaussian Mixture Model are not incredibly good, but they seem reasonable for me to say that we can trust on the customer segmentation that was made, and that those segments are probably a good start to achieve a better understanding and this is reflected when a more qualitative analysis is made, because the clusters give interesting information.
+
+The table below shows 7 clusters.
+- Cluster number 1 represents
+- Cluster number 2 represents
+- Cluster number 3 represents
+- Cluster number 4 represents
+- Cluster number 5 represents
+- Cluster number 6 represents
+- Cluster number 7 represents
+
+TODO: ADD TABLE OF CLUSTERS AND DESCRIBE WHAT THEY REPRESENT
+
 
 ### Justification
-In this section, your model’s final solution and its results should be compared to the benchmark you established earlier in the project using some type of statistical analysis. You should also justify whether these results and the solution are significant enough to have solved the problem posed in the project. Questions to ask yourself when writing this section:
-- _Are the final results found stronger than the benchmark result reported earlier?_
-- _Have you thoroughly analyzed and discussed the final solution?_
-- _Is the final solution significant enough to have solved the problem?_
+In the following table, we can see that GMM did not have better results than the proposed k-means benchmark model.
 
+TODO: ADD TABLE GMM VS K-MEANS
+
+Although I used grid search to look for the best hyper-parameters for both the Gaussian Mixture Model and the DBSCAN, neither of them could get a better score than the k-means model. This is disappointing, but encouraging at the same time. It means that with a simple and well-known clustering model it is possible to get interesting information from the company's customers.
+
+As I mentioned before, this is a start point for a better customer understanding and despite this project did not give all the answers, it illuminated the path to follow. To further validate the analysis and solve the problem, I would disaggregate the data from each store. They are all located in different environments, with different people that can have different habits. So to make better decisions and solve the presented problem, it is necessary to understand the segments for each of the stores.
 
 ## V. Conclusion
 _(approx. 1-2 pages)_
@@ -125,10 +136,12 @@ In this section, you will summarize the entire end-to-end problem solution and d
 - _Does the final model and solution fit your expectations for the problem, and should it be used in a general setting to solve these types of problems?_
 
 ### Improvement
-In this section, you will need to provide discussion as to how one aspect of the implementation you designed could be improved. As an example, consider ways your implementation can be made more general, and what would need to be modified. You do not need to make this improvement, but the potential solutions resulting from these changes are considered and compared/contrasted to your current solution. Questions to ask yourself when writing this section:
-- _Are there further improvements that could be made on the algorithms or techniques you used in this project?_
-- _Were there algorithms or techniques you researched that you did not know how to implement, but would consider using if you knew how?_
-- _If you used your final solution as the new benchmark, do you think an even better solution exists?_
+
+In terms of algorithms I think there is a lot to improve. Although k-means turned out to be the best of the three algorithms, there are many more clustering algorithms that could be use. For another project I would definitely try Affinity Propagation because the customers are more like a bunch of points together than different figures in space and according to the classical analysis of clustering algorithms, AP is good on that (http://scikit-learn.org/0.16/_images/plot_cluster_comparison_0011.png)
+
+I would not try to tune the hyper-parameters of the two algorithms I used. On one hand, When I did the grid search on the Gaussian Mixture Model I realized that when the maximum numbers of iterations was 1 and I started from a k-means I always got the best scores, so obviously that is telling me to converge the GMM to a k-means. On the other hand, it does not matter how much I tuned the hyper-parameters on DBSCAN, I could not get good results, and now that I know more about the data distribution and looking at the clustering comparison image, I can tell that DBSCAN was a bad choice.
+
+If I use my proposed solution as the benchmark I would get a better solution almost instantly: k-means. I still think that Affinity Propagation or maybe ward can do better than k-means and I will have to experiment with those algorithms in a forthcoming project.
 
 -----------
 
