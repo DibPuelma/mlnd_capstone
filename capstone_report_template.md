@@ -28,27 +28,46 @@ I consider that the metrics chosen are important because the first one will give
 _(approx. 2-4 pages)_
 
 ### Data Exploration
-In this section, you will be expected to analyze the data you are using for the problem. This data can either be in the form of a dataset (or datasets), input data (or input files), or even an environment. The type of data should be thoroughly described and, if possible, have basic statistics and information presented (such as discussion of input features or defining characteristics about the input or environment). Any abnormalities or interesting qualities about the data that may need to be addressed have been identified (such as features that need to be transformed or the possibility of outliers). Questions to ask yourself when writing this section:
-- _If a dataset is present for this problem, have you thoroughly discussed certain features about the dataset? Has a data sample been provided to the reader?_
-- _If a dataset is present for this problem, are statistics about the dataset calculated and reported? Have any relevant results from this calculation been discussed?_
-- _If a dataset is **not** present for this problem, has discussion been made about the input space or input data for your problem?_
-- _Are there any abnormalities or characteristics about the input space or dataset that need to be addressed? (categorical variables, missing values, outliers, etc.)_
+
+To solve the problem I will use data from two main sources:
+
+The first one will be given by the company and is the history of purchase from 4 of the company's stores. This dataset includes the customer's email and RUT (Unique Tax Number in Chile) which gives a estimation of the age of the person and is a unique identifier of who is making the purchase, the date of the transaction, the amount of items, the price of each item and in which store the purchase was made. It has 9528 rows of data in total. This dataset is available in the .zip file of this project and a sample is shown below:
+
+TODO: INSERT DATA SAMPLE FROM EXCEL
+
+The second one is a public API hosted in https://api.rutify.cl/, which gives you the address and sex of a person based on it's RUT. An example of the API response is shown below:
+
+TODO: INSERT API RESPONSE
+
+To clean the data and make a better and focused segmentation I did some data manipulation.
+1.- Group the transactions of each person to get the amount of items that person bought and the amount of money he or she spent in the whole period of analysis.
+2.- Drop all the features that did not contribute to the segmentation I wanted to make, such as date, year, month, rut, purchase_type among others.
+3.- Remove all the ids generated when I consolidated the data. This was done in the data_cleaner.py file and consisted on getting the age of each customer and leaving the wholesalers out of the customer base.
+4.- Remove all rows with NA values.
+
+This data processing left 3 important features for each client: age, number of items bought and amount of money spent.
+
+The outlier removal is explained in the Data Preprocessing section
 
 ### Exploratory Visualization
-In this section, you will need to provide some form of visualization that summarizes or extracts a relevant characteristic or feature about the data. The visualization should adequately support the data being used. Discuss why this visualization was chosen and how it is relevant. Questions to ask yourself when writing this section:
-- _Have you visualized a relevant characteristic or feature about the dataset or input data?_
-- _Is the visualization thoroughly analyzed and discussed?_
-- _If a plot is provided, are the axes, title, and datum clearly defined?_
+I used the visualization of the data to see the distribution of each feature and how each one related to one another. For this I used two graphs, a scatter matrix and a heat map. Both images are shown below.
+
+TODO: INSERT HEAT MAP AND SCATTER MATRIX
+
+As we can see, there is a huge correlation between the amount of money spent and the amount of items bought. This is pretty normal, as more items mean more money, but is important to have both features so we can differentiate customers that buy expensive things from the ones that buy cheap things in a bulkier way.
+
+It is interesting that in the scatter matrix is it possible to see some outliers values in the amount of money spent (period_total_value) and in the amount of items bought (period_total_quantity). This outliers were deleted from the dataset.
 
 ### Algorithms and Techniques
-In this section, you will need to discuss the algorithms and techniques you intend to use for solving the problem. You should justify the use of each one based on the characteristics of the problem and the problem domain. Questions to ask yourself when writing this section:
-- _Are the algorithms you will use, including any default variables/parameters in the project clearly defined?_
-- _Are the techniques to be used thoroughly discussed and justified?_
-- _Is it made clear how the input data or datasets will be handled by the algorithms and techniques chosen?_
+As this is a segmentation problem, I will use clustering algorithms. Specifically I will use two algorithms; a Gaussian Mixture Model, because I believe that the data should be composed of a finite number of Gaussian distributions; and a DBSCAN to see if a density based clustering technique is adequate for this type of problems. Both algorithms will take the data points and assign them to clusters.
+
+The first one will use k-means or random positions to establish the first centroids and then iterate to move those centroids in order to try to find a better clustering. The second one will start in a random location and use the epsilon and the minimum number of points to decide wether a group of points belongs to a cluster or not. In the following webpage there is a very clear example of how this works (https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/).
+
+In terms of hyper-parameters, for the GMM, I will use the metrics to find the best number of components and then use a grid search algorithm to find the best type of covariance between full, tied, diagonal or spherical, the best type of parameter initialization between k-means or random, a good value for the convergence threshold and a good value for the maximum amount of iterations. For the DBSCAN I will use a grid search algorithm to find a good value for the epsilon and a good value for the minimum samples for a point to be considered a core point.
 
 ### Benchmark
 
-In qualitative terms, to consider the analysis successful, the clusters created by the model should help take commercial decisions and should represent types of customers. Today, the company is guessing that they have 4 types of clients based on an psychographic description. These types are: sport casual, basic classical, sophisticated classical, and ethnic. If the algorithm is capable of accurately describe these four types or make a better segmentation of the clients, it will beat the human created model. Thus, better than the benchmark model.
+In qualitative terms, to consider the analysis successful, the clusters created by the model should help take commercial decisions and should represent types of customers. Today, the company is guessing that they have 4 types of clients based on an psychographic description and I think this could be reflected in their expenditure habits. These types are: sport casual, basic classical, sophisticated classical, and ethnic. If the algorithm is capable of accurately describe these four types or make a better segmentation of the clients, it will beat the human created model. Thus, better than the benchmark model.
 
 In quantitative terms, I will compare my algorithms with a k-means algorithms with the best number of clusters based on silhouette score and the Calinski-Harabasz index, but with no other parameters optimized. This will help me get some insights on wether what I am doing is just a minor improvement or a much more fascinating approach. If the k-means algorithm achieves a better value in the metrics, then the use of the proposed algorithms is not valuable.
 
