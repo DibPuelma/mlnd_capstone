@@ -4,6 +4,8 @@ import pandas as pd
 # https://twitter.com/RodrigoWagnerB/status/410907897019629568
 
 API_HOST = 'https://api.rutify.cl/rut/'
+
+# get the address, commune and sex for each RUT in the database
 def get_data(rut):
     r = req.get(API_HOST + str(rut))
     data = r.json()
@@ -12,6 +14,8 @@ def get_data(rut):
     else:
         return ['','','']
 
+# add a verification number or check number to each RUT
+# in Chile, the mod11 algorithm is used
 def get_verify_number(rut):
     rut = str(rut)
     multiplier = 0
@@ -27,6 +31,10 @@ def get_verify_number(rut):
     else:
         digit = str(result)
     return rut + digit
+
+# clean the wholesale customers from the database,
+# these are considered to buy 3 or more items in only one purchase.
+# it receives the whole dataframe
 
 def clean_majorists(df):
     count = 0
@@ -54,6 +62,8 @@ def clean_majorists(df):
     df = add_verify(df)
     return df
 
+# get the age of the customer from the RUT using a regression found in
+# https://twitter.com/rodrigowagnerb/status/410907897019629568?lang=es
 def get_age(rut):
     result = 2018 - (int(rut)/1000000*3.46 + 1930)
     if result > 12:
@@ -61,6 +71,7 @@ def get_age(rut):
     else:
         return 0
 
+# add the verification number to the dataframe
 def add_verify(df):
     verifies = []
     for index, row in df.iterrows():
@@ -69,11 +80,13 @@ def add_verify(df):
     df['rut_v'] = verify_serie.values
     return df
 
+# add the age to the dataframe
 def add_age(df):
     df['age'] = df['rut'].apply(get_age)
     return df
 
-def append_address(df):
+# add the address to the dataframe
+def add_address(df):
     data_dict = {'address': [], 'commune': [], 'sex': []}
     rows = df.shape[0]
     for index, row in df.iterrows():
@@ -94,6 +107,8 @@ def append_address(df):
     df['sex'] = sex_serie.values
     return df
 
+# rename some columns for readability and delete two columns
+# that have duplicated information
 def clean_columns(df):
     df = df.rename(columns={
                     'FECHA': 'date',
@@ -111,5 +126,5 @@ def clean_columns(df):
     return df
 
 df = pd.read_csv('capstone_processed_data.csv')
-df = append_address(df)
+df = add_address(df)
 df.to_csv('capstone_processed_data.csv')
