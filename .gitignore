@@ -110,3 +110,6 @@ venv.bak/
 # Milscelaneous
 
 .DS_Store
+
+# zips
+*.zip
